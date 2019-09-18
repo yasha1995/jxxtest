@@ -7,15 +7,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import com.alibaba.fastjson.JSONObject;
+//import com.alibaba.fastjson.JSONObject;
+import com.om.entity.pojo.AccessToken;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import com.om.entity.menu.Menu;
 import com.om.util.weixin.model.Token;
 import com.om.util.weixin.utils.MyX509TrustManager;
 /**
@@ -25,6 +29,8 @@ import com.om.util.weixin.utils.MyX509TrustManager;
  * 功能模块：
  */
 public class WebChatConfig {
+    private static Logger log = LoggerFactory.getLogger(WebChatConfig.class);
+
     // 获取access_token的接口地址（GET） 限2000（次/天）
     public final static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     // 创建菜单
@@ -42,6 +48,32 @@ public class WebChatConfig {
     public final static String APPID = ConfigUtil.getProperty("wx_appid");
     // 微信wx_secret
     public final static String SECERT = ConfigUtil.getProperty("wx_secret");
+
+     /**
+      * 创建菜单
+      *
+      * @param menu 菜单实例
+      * @param accessToken 有效的access_token
+      * @return 0表示成功，其他值表示失败
+      */
+    public static int createMenu(Menu menu, String accessToken) {
+        int result = 0;
+        // 拼装创建菜单的url
+        String url = MENU_CREATE_URL.replace("ACCESS_TOKEN", accessToken);
+        // 将菜单对象转换成json字符串
+        String jsonMenu = JSONObject.fromObject(menu).toString();
+        // 调用接口创建菜单
+        JSONObject jsonObject = httpRequest(url, "POST", jsonMenu);
+        if (null != jsonObject) {
+            if (0 != jsonObject.getInt("errcode")) {
+                result = jsonObject.getInt("errcode");
+                log.error("创建菜单失败 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));
+            }
+        }
+
+        return result;
+    }
+
 
 
     public static void main(String[] args) {
@@ -82,12 +114,37 @@ public class WebChatConfig {
             Token.setAccessToken(jsonObject.getString("access_token"));
             // 正常过期时间是7200秒，此处设置3600秒读取一次
             // 一天有获取2000次的限制 ,设置1小时获取一次AccessToken防止超出请求限制
-            Token.setExpiresIn(jsonObject.getIntValue("expires_in") / 2);
+            Token.setExpiresIn(jsonObject.getInt("expires_in") / 2);
             Token.setAddTime(currentTime);
         }
         return Token;
     }
+    /**
+     * 获取access_token
+     *
+     * @param appid 凭证
+     * @param appsecret 密钥
+     * @return
+     */
+    public static AccessToken getAccessToken(String appid, String appsecret) {
+        AccessToken accessToken = null;
 
+        String requestUrl = ACCESS_TOKEN_URL.replace("APPID", appid).replace("APPSECRET", appsecret);
+        JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
+        // 如果请求成功
+        if (null != jsonObject) {
+            try {
+                accessToken = new AccessToken();
+                accessToken.setToken(jsonObject.getString("access_token"));
+                accessToken.setExpiresIn(jsonObject.getInt("expires_in"));
+            } catch (JSONException e) {
+                accessToken = null;
+                // 获取token失败
+                log.error("获取token失败 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));
+            }
+        }
+        return accessToken;
+    }
     /**
      * 发起https请求并获取结果
      *
@@ -145,8 +202,8 @@ public class WebChatConfig {
             inputStream.close();
             inputStream = null;
             httpUrlConn.disconnect();
-            jsonObject = JSONObject.parseObject(buffer.toString());
-            // jsonObject = JSONObject.fromObject(buffer.toString());
+//            jsonObject = JSONObject.parseObject(buffer.toString());
+             jsonObject = JSONObject.fromObject(buffer.toString());
         } catch (ConnectException ce) {
             System.out.println("Weixin server connection timed out.");
         } catch (Exception e) {

@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 public class TokenThread implements Runnable {
     private static Logger log = LoggerFactory.getLogger(TokenThread.class);
     // 第三方用户唯一凭证
-    public static String appid = "";
+    public static String appid = "wx4079b3c62a6f3b8b";
     // 第三方用户唯一凭证密钥
-    public static String appsecret = "";
+    public static String appsecret = "d7b25eefde1e43c89b961dbf68c1fbcd";
     public static Token accessToken = null;
 
     public void run() {

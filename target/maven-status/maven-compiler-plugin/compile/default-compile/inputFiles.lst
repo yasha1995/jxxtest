@@ -43,7 +43,6 @@ E:\project\jxxtest\src\main\java\com\om\thread\TokenThread.java
 E:\project\jxxtest\src\main\java\com\om\util\weixin\utils\StringUtil.java
 E:\project\jxxtest\src\main\java\com\om\util\weixin\WebChatUtil.java
 E:\project\jxxtest\src\main\java\com\om\entity\message\ShortVideoInputMessage.java
-E:\project\jxxtest\src\main\java\com\om\controller\InitServlet.java
 E:\project\jxxtest\src\main\java\com\om\controller\WebCharController.java
 E:\project\jxxtest\src\main\java\com\om\controller\UserController2.java
 E:\project\jxxtest\src\main\java\com\om\entity\output\Image.java
@@ -58,4 +57,5 @@ E:\project\jxxtest\src\main\java\com\om\entity\output\VideoOutPutMessage.java
 E:\project\jxxtest\src\main\java\com\om\util\weixin\utils\CollectionUtil.java
 E:\project\jxxtest\src\main\java\com\om\entity\output\TextMessage.java
 E:\project\jxxtest\src\main\java\com\om\controller\Text2.java
+E:\project\jxxtest\src\main\java\com\om\servlet\InitServlet.java
 E:\project\jxxtest\src\main\java\com\om\entity\output\Articles.java

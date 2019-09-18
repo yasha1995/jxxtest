@@ -1,4 +1,4 @@
-package com.om.controller;
+package com.om.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,8 +22,8 @@ public class InitServlet extends HttpServlet {
 
     public void init() throws ServletException {
         // 获取web.xml中配置的参数
-        TokenThread.appid = getInitParameter("appid");
-        TokenThread.appsecret = getInitParameter("appsecret");
+        TokenThread.appid = getInitParameter("wx4079b3c62a6f3b8b");//appid
+        TokenThread.appsecret = getInitParameter("d7b25eefde1e43c89b961dbf68c1fbcd");//appsecret
 
         log.info("weixin api appid:{}", TokenThread.appid);
         log.info("weixin api appsecret:{}", TokenThread.appsecret);

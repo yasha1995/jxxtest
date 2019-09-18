@@ -22,8 +22,8 @@ public class TokenUtil {
     /**
      * 方法名：getToken</br>
      * 详述：从数据库里面获取token</br>
-     * 开发人员：souvc </br>
-     * 创建时间：2015-10-5  </br>
+     * 开发人员：luohua </br>
+     * 创建时间：2019/9/12  </br>
      * @return
      * @throws
      */
@@ -60,8 +60,8 @@ public class TokenUtil {
     /**
      * 方法名：saveToken</br>
      * 详述：保存token</br>
-     * 开发人员：souvc </br>
-     * 创建时间：2015-10-5  </br>
+     * 开发人员：luohua </br>
+     * 创建时间：2019/9/12  </br>
      * @return
      * @throws
      */

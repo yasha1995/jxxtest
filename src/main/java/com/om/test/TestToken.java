@@ -1,4 +1,4 @@
-package com.om.text;
+package com.om.test;
 
 import com.om.entity.Token;
 import com.om.util.weixin.CommonUtil;

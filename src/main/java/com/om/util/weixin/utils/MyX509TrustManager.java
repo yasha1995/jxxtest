@@ -9,7 +9,7 @@ import javax.net.ssl.X509TrustManager;
  * @Author: luohua
  * @Date: 2019/9/12 14:39
  * @Version 1.0
- * 功能模块：
+ * 功能模块：证书信任管理器（用于https请求）
  */
 public class MyX509TrustManager implements X509TrustManager{
 

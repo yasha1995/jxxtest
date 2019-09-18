@@ -1,4 +1,4 @@
-package com.om.text;
+package com.om.test;
 
 
 import java.sql.SQLException;
