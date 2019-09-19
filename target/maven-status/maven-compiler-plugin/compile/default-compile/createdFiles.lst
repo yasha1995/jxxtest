@@ -11,6 +11,7 @@ com\om\entity\event\LocationEvent.class
 com\om\service\UserServiceThread2$1.class
 com\om\controller\Test1$CustomerLine.class
 com\om\service\UserServiceThread$2.class
+com\om\controller\TestWeixinController.class
 com\om\entity\message\VideoMessage.class
 com\om\entity\message\TextMessage.class
 com\om\util\weixin\utils\StringUtil.class

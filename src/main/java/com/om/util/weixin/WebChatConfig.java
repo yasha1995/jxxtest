@@ -7,7 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.URL;
+import java.util.List;
 
+import com.om.entity.pojo.SNSUserInfo;
+import com.om.entity.pojo.WeixinOauth2Token;
+import com.om.entity.pojo.WeixinUserInfo;
+import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.net.ssl.HttpsURLConnection;
@@ -43,6 +48,8 @@ public class WebChatConfig {
     public static final String JSAPI_TICKET_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
     // 发送模板消息
     public static final String SEND_MESSAGE = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+    //获取用户的基本信息
+    public static final String WeixinUserInfo = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID";
 
     // 微信appid
     public final static String APPID = ConfigUtil.getProperty("wx_appid");
@@ -76,9 +83,27 @@ public class WebChatConfig {
 
 
 
-    public static void main(String[] args) {
-        System.out.println(getToken(APPID, SECERT));
-    }
+//    public static void main(String[] args) {
+//        System.out.println(getToken(APPID, SECERT));
+//    }
+public static void main(String args[]) {
+    // 获取接口访问凭证
+    String accessToken = CommonUtil.getToken("wx4079b3c62a6f3b8b", "d7b25eefde1e43c89b961dbf68c1fbcd").getAccessToken();
+    /**
+     * 获取用户信息
+     */
+    WeixinUserInfo user = getUserInfo(accessToken, "oCy_AwJ_fAOwjOmYmSyPUOgQWNO8");//openId:想要查询的用户的微信号（关注公众号加密之后的微信号）
+    System.out.println("OpenID：" + user.getOpenId());
+    System.out.println("关注状态：" + user.getSubscribe());
+    System.out.println("关注时间：" + user.getSubscribeTime());
+    System.out.println("昵称：" + user.getNickname());
+    System.out.println("性别：" + user.getSex());
+    System.out.println("国家：" + user.getCountry());
+    System.out.println("省份：" + user.getProvince());
+    System.out.println("城市：" + user.getCity());
+    System.out.println("语言：" + user.getLanguage());
+    System.out.println("头像：" + user.getHeadImgUrl());
+}
 
     /**
      * 获得Token
@@ -210,5 +235,141 @@ public class WebChatConfig {
             System.out.println("https request error:{}" + e.getMessage());
         }
         return jsonObject;
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param accessToken 接口访问凭证
+     * @param openId 用户标识
+     * @return WeixinUserInfo
+     */
+    public static WeixinUserInfo getUserInfo(String accessToken, String openId) {
+        WeixinUserInfo weixinUserInfo = null;
+        // 拼接请求地址
+        //String requestUrl = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID";
+        String requestUrl = WeixinUserInfo.replace("ACCESS_TOKEN", accessToken).replace("OPENID", openId);
+        // 获取用户信息
+        JSONObject jsonObject = CommonUtil.httpsRequest(requestUrl, "GET", null);
+
+        if (null != jsonObject) {
+            try {
+                weixinUserInfo = new WeixinUserInfo();
+                // 用户的标识
+                weixinUserInfo.setOpenId(jsonObject.getString("openid"));
+                // 关注状态（1是关注，0是未关注），未关注时获取不到其余信息
+                weixinUserInfo.setSubscribe(jsonObject.getInt("subscribe"));
+                // 用户关注时间
+                weixinUserInfo.setSubscribeTime(jsonObject.getString("subscribe_time"));
+                // 昵称
+                weixinUserInfo.setNickname(jsonObject.getString("nickname"));
+                // 用户的性别（1是男性，2是女性，0是未知）
+                weixinUserInfo.setSex(jsonObject.getInt("sex"));
+                // 用户所在国家
+                weixinUserInfo.setCountry(jsonObject.getString("country"));
+                // 用户所在省份
+                weixinUserInfo.setProvince(jsonObject.getString("province"));
+                // 用户所在城市
+                weixinUserInfo.setCity(jsonObject.getString("city"));
+                // 用户的语言，简体中文为zh_CN
+                weixinUserInfo.setLanguage(jsonObject.getString("language"));
+                // 用户头像
+                weixinUserInfo.setHeadImgUrl(jsonObject.getString("headimgurl"));
+            } catch (Exception e) {
+                if (0 == weixinUserInfo.getSubscribe()) {
+                    log.error("用户{}已取消关注", weixinUserInfo.getOpenId());
+                } else {
+                    int errorCode = jsonObject.getInt("errcode");
+                    String errorMsg = jsonObject.getString("errmsg");
+                    log.error("获取用户信息失败 errcode:{} errmsg:{}", errorCode, errorMsg);
+                }
+            }
+        }
+        return weixinUserInfo;
+    }
+
+
+    /**
+     * 获取网页授权凭证
+     *
+     * @param appId 公众账号的唯一标识
+     * @param appSecret 公众账号的密钥
+     * @param code
+     * @return WeixinAouth2Token
+     */
+    public static WeixinOauth2Token getOauth2AccessToken(String appId, String appSecret, String code) {
+        WeixinOauth2Token wat = null;
+        // 拼接请求地址
+
+        String requestUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
+        requestUrl = requestUrl.replace("APPID", appId);
+        requestUrl = requestUrl.replace("SECRET", appSecret);
+        requestUrl = requestUrl.replace("CODE", code);
+        // 获取网页授权凭证
+        JSONObject jsonObject = CommonUtil.httpsRequest(requestUrl, "GET", null);
+        if (null != jsonObject) {
+            try {
+                wat = new WeixinOauth2Token();
+                wat.setAccessToken(jsonObject.getString("access_token"));
+                wat.setExpiresIn(jsonObject.getInt("expires_in"));
+                wat.setRefreshToken(jsonObject.getString("refresh_token"));
+                wat.setOpenId(jsonObject.getString("openid"));
+                wat.setScope(jsonObject.getString("scope"));
+            } catch (Exception e) {
+                wat = null;
+                int errorCode = jsonObject.getInt("errcode");
+                String errorMsg = jsonObject.getString("errmsg");
+                log.error("获取网页授权凭证失败 errcode:{} errmsg:{}", errorCode, errorMsg);
+            }
+        }
+        return wat;
+    }
+
+    /**
+     * 通过网页授权获取用户信息
+     *
+     * @param accessToken 网页授权接口调用凭证
+     * @param openId 用户标识
+     * @return SNSUserInfo
+     */
+    //@SuppressWarings注解  作用：用于抑制编译器产生警告信息。
+    //unchecked:告诉编译器忽略 unchecked 警告信息，如使用List，ArrayList等未进行参数化产生的警告信息。
+    //deprecation:如果使用了使用@Deprecated注释的方法，编译器将出现警告信息。使用这个注释将警告信息去掉
+    @SuppressWarnings( { "deprecation", "unchecked" })
+    public static SNSUserInfo getSNSUserInfo(String accessToken, String openId) {
+        SNSUserInfo snsUserInfo = null;
+        // 拼接请求地址
+        String requestUrl = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID";
+        requestUrl = requestUrl.replace("ACCESS_TOKEN", accessToken).replace("OPENID", openId);
+        // 通过网页授权获取用户信息
+        JSONObject jsonObject = CommonUtil.httpsRequest(requestUrl, "GET", null);
+
+        if (null != jsonObject) {
+            try {
+                snsUserInfo = new SNSUserInfo();
+                // 用户的标识
+                snsUserInfo.setOpenId(jsonObject.getString("openid"));
+                // 昵称
+                snsUserInfo.setNickname(jsonObject.getString("nickname"));
+                // 性别（1是男性，2是女性，0是未知）
+                snsUserInfo.setSex(jsonObject.getInt("sex"));
+                // 用户所在国家
+                snsUserInfo.setCountry(jsonObject.getString("country"));
+                // 用户所在省份
+                snsUserInfo.setProvince(jsonObject.getString("province"));
+                // 用户所在城市
+                snsUserInfo.setCity(jsonObject.getString("city"));
+                // 用户头像
+                snsUserInfo.setHeadImgUrl(jsonObject.getString("headimgurl"));
+                // 用户特权信息
+                snsUserInfo.setPrivilegeList(JSONArray.toList(jsonObject.getJSONArray("privilege"), List.class));
+            } catch (Exception e) {
+                snsUserInfo = null;
+                int errorCode = jsonObject.getInt("errcode");
+                String errorMsg = jsonObject.getString("errmsg");
+                log.error("获取用户信息失败 errcode:{} errmsg:{}", errorCode, errorMsg);
+            }
+        }
+        return snsUserInfo;
     }
 }

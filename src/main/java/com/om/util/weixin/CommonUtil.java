@@ -1,10 +1,7 @@
 package com.om.util.weixin;
 
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
 
@@ -13,7 +10,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import com.om.entity.Token;
+import com.om.entity.pojo.Token;
 import com.om.util.weixin.utils.MyX509TrustManager;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -25,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @Author: luohua
  * @Date: 2019/9/12 17:23
  * @Version 1.0
- * 功能模块：
+ * 功能模块：通用工具类
  */
 public class CommonUtil {
     private static Logger log = LoggerFactory.getLogger(CommonUtil.class);
@@ -119,5 +116,42 @@ public class CommonUtil {
             }
         }
         return token;
+    }
+
+    /**
+     * URL编码（utf-8）
+     *
+     * @param source
+     * @return
+     */
+    public static String urlEncodeUTF8(String source) {
+        String result = source;
+        try {
+            result = java.net.URLEncoder.encode(source, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 根据内容类型判断文件扩展名
+     *
+     * @param contentType 内容类型
+     * @return
+     */
+    public static String getFileExt(String contentType) {
+        String fileExt = "";
+        if ("image/jpeg".equals(contentType))
+            fileExt = ".jpg";
+        else if ("audio/mpeg".equals(contentType))
+            fileExt = ".mp3";
+        else if ("audio/amr".equals(contentType))
+            fileExt = ".amr";
+        else if ("video/mp4".equals(contentType))
+            fileExt = ".mp4";
+        else if ("video/mpeg4".equals(contentType))
+            fileExt = ".mp4";
+        return fileExt;
     }
 }

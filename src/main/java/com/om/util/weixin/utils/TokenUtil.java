@@ -1,6 +1,6 @@
 package com.om.util.weixin.utils;
 
-import com.om.entity.Token;
+import com.om.entity.pojo.Token;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

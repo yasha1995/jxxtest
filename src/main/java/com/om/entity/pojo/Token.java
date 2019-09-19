@@ -1,4 +1,4 @@
-package com.om.entity;
+package com.om.entity.pojo;
 
 /**
  * @Author: luohua

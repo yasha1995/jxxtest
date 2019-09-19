@@ -1,6 +1,6 @@
 package com.om.test;
 
-import com.om.entity.Token;
+import com.om.entity.pojo.Token;
 import com.om.util.weixin.CommonUtil;
 import com.om.util.weixin.utils.TokenUtil;
 import org.junit.Test;

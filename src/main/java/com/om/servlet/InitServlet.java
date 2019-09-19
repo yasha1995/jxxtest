@@ -22,8 +22,8 @@ public class InitServlet extends HttpServlet {
 
     public void init() throws ServletException {
         // 获取web.xml中配置的参数
-        TokenThread.appid = getInitParameter("wx4079b3c62a6f3b8b");//appid
-        TokenThread.appsecret = getInitParameter("d7b25eefde1e43c89b961dbf68c1fbcd");//appsecret
+        TokenThread.appid = getInitParameter("appid");//appid:wx4079b3c62a6f3b8b
+        TokenThread.appsecret = getInitParameter("appsecret");//appsecret:d7b25eefde1e43c89b961dbf68c1fbcd
 
         log.info("weixin api appid:{}", TokenThread.appid);
         log.info("weixin api appsecret:{}", TokenThread.appsecret);
