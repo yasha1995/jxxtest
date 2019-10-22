@@ -12,7 +12,7 @@ public class EnjiyFutureTask<V> implements Runnable, Future<V> {
     Callable<V> callable;
     V result = null;
 
-    public EnjiyFutureTask(Callable<V> callable){
+    public  EnjiyFutureTask(Callable<V> callable){
         this.callable = callable;
     }
     @Override

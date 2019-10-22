@@ -20,6 +20,13 @@ import java.io.IOException;
 public class OAuthServlet extends HttpServlet {
     private static final long serialVersionUID = -1847238807216447030L;
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
@@ -27,7 +34,6 @@ public class OAuthServlet extends HttpServlet {
         // 用户同意授权后，能获取到code
         String code = request.getParameter("code");
         String state = request.getParameter("state");
-
         // 用户同意授权
         if (!"authdeny".equals(code)) {
             // 获取网页授权access_token
